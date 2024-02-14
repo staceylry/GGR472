@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2 transportations in GTA</title>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+
+<body>
+    <!-- row 1: title and bgm -->
+    <div class="row">
+        <!-- Map title and formatting -->
+        <div class="col-6">
+            <h4 style="text-align:center; font-weight: bold;">Map of 2 major transportations in GTA</h4>
+            <p style="text-align: center;">
+                and their position relative to U of T buildings (pink spots)
+            </p>
+        </div>
+
+        <!-- add bgm from mp3 file -->
+        <div class="col-3" style="text-align: right;">
+            <audio src="./PerituneMaterial_Soft_Day.mp3" id="aud" autoplay="autoplay" controls="controls" preload="auto"></audio>
+        </div>
+
+        <div class="col-2">
+            <br>
+            <div class="bgm">bgm: Peritune Material - Soft Day</div>
+        </div>
+    </div>
+
+    <!-- row 2: web map descriptions, plus wikipedia links -->
+    <div class="row">
+       <div class="description">
+            The line on the right is 
+            <b>
+                <a href="https://en.wikipedia.org/wiki/Don_Valley_Parkway">Don-Valley 
+                    Parkway (DVP)</a>
+            </b>,
+            which is one of the most important highways in GTA.
+            <br>
+            The polygon down there is the 
+            <b>
+                <a href="https://en.wikipedia.org/wiki/Billy_Bishop_Toronto_City_Airport">Billy 
+                    Bishop Toronto City Airport (YTZ)</a>
+            </b>, 
+            which is the second biggest airport in GTA.
+            <br>
+        </div>
+    </div>
+
+    <div id="my-map" class="map-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
