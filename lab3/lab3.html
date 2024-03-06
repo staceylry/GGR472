@@ -11,15 +11,16 @@
 </head>
 
 <body>
-    <!-- row 1: title -->
-    <div class="row">
-            <h4 style="text-align:center; font-weight: bold;">Map of 2 major transportations in GTA</h4>
-            <p style="text-align: center;">
-                and their position relative to U of T buildings (pink spots)
-            </p>
-    </div>
-
     <div id="my-map" class="map-container"></div>
+    <!-- row 1: title -->
+    <div class="description">
+    <div class="row">
+            <h5 style="text-align:center; font-weight: bold;">Click on the streets/buildings to see details. Click on below buttons to filter roads by their direction.</h5>
+    </div>
+    <button id="filter-sn">Show South-North Direction Streets</button>
+    <button id="filter-we">Show West-East Direction Streets</button>
+    <button id="filter-all">Show All Streets</button>
+    </div>
 
     <script src="script.js"></script>
 </body>

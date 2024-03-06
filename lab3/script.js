@@ -57,17 +57,49 @@ map.on('load', () => {
             'circle-color': '#FF00FF'
         }
     });
+});
+
+map.on('load', () => {
+    map.addSource('streets-data', {
+        type: 'geojson',
+        data: 'https://staceylry.github.io/GGR472/lab3/streets.geojson' // Your URL to your buildings.geojson file
+    });
+    
+    map.addLayer({
+        'id': 'streets',
+        'type': 'line',
+        'source': 'streets-data',
+        'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
+        },
+        'paint': {
+                'line-color': '#800080',
+                'line-opacity': 0.5,
+                'line-width': 5}
+    });
 
     map.addLayer({
-        'id': 'buildings-hl',
-        'type': 'circle',
-        'source': 'buildings-data', // Same as before, use same source twice
-        'source-layer': 'buildings-buv186', // Tileset NAME (diff to ID), get this from mapbox tileset page
-        'paint': {  // styles of the point on map
-            'circle-radius': 5,
-            'circle-color': white
-        },
-        'filter': ['==', ['get', 'buildingname'], ''] //Set an initial filter to return nothing
+        'id': 'streets-hl',
+        'type': 'line',
+        'source': 'streets-data',
+        'paint': {
+                'line-color': '#000000',
+                'line-opacity': 1,
+                'line-width': 5},
+        'filter': ['==', ['get', 'roadname'], ''] //Set an initial filter to return nothing
+    });
+
+    document.getElementById('filter-sn').addEventListener('click', function() {
+        map.setFilter('streets', ['==', ['get', 'direction'], 'ns']);
+    });
+
+    document.getElementById('filter-we').addEventListener('click', function() {
+        map.setFilter('streets', ['==', ['get', 'direction'], 'we']);
+    });
+
+    document.getElementById('filter-all').addEventListener('click', function() {
+        map.setFilter('streets', ['any', ['==', ['get', 'direction'], 'we'], ['==', ['get', 'direction'], 'ns']]);
     });
 });
 
@@ -83,16 +115,24 @@ map.on('click', 'uoft-pnt', (e) => {
     new mapboxgl.Popup() //Declare new popup object on each click
         .setLngLat(e.lngLat) //Use method to set coordinates of popup based on mouse click location
         .setHTML("<b>Building Name:</b> " + e.features[0].properties.name) //Add buildingname to popup
-        .addTo(map); //Show popup on map
+        .addTo(map); //Show popup with building name on map
 });
 
+map.on('click', 'streets', (e) => {
+    new mapboxgl.Popup() //Declare new popup object on each click
+        .setLngLat(e.lngLat) //Use method to set coordinates of popup based on mouse click location
+        .setHTML("<b>Street Name:</b> " + e.features[0].properties.roadname) //Add roadname to popup
+        .addTo(map); //Show popup with street name on map
+});
+
+
 //mousemove and highlght
-map.on('mousemove', 'buildings-hl', (e) => {
+map.on('click', 'streets', (e) => {
     if (e.features.length > 0) { //if there are features in the event features array (i.e features under the mouse hover) then go into the conditional
 
-        //set the filter of the provinces-hl to display the feature you're hovering over
-        //e.features[0] is the first feature in the array and properties.PRUID is the Province ID for that feature
-        map.setFilter('buildings-hl', ['==', ['get', 'buildingname'], e.features[0].properties.buildingname]);
+        //set the filter of the streets-hl to display highlighted road
+        //search road by roadname
+        map.setFilter('streets-hl', ['==', ['get', 'roadname'], e.features[0].properties.roadname]);
 
     }
- });
+});
