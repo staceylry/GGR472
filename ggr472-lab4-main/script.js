@@ -128,7 +128,7 @@ document.getElementById('togglePointsBtn').addEventListener('click', toggleInput
 function toggleInputPoints() {
     var visibility = map.getLayoutProperty('input-pnts', 'visibility');
     
-    if (typeof visibility === 'none') {
+    if (visibility === 'none') {
         map.setLayoutProperty('input-pnts', 'visibility', 'visible');
     } else {
         map.setLayoutProperty('input-pnts', 'visibility', 'none');
