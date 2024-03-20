@@ -16,7 +16,8 @@ const map = new mapboxgl.Map({
     zoom: 12 // starting zoom level
 });
 
-
+// Add zoom and rotation controls to the map.
+map.addControl(new mapboxgl.NavigationControl());
 
 /*--------------------------------------------------------------------
 Step 2: VIEW GEOJSON POINT DATA ON MAP
@@ -24,7 +25,115 @@ Step 2: VIEW GEOJSON POINT DATA ON MAP
 //HINT: Create an empty variable
 //      Use the fetch method to access the GeoJSON from your online repository
 //      Convert the response to JSON format and then store the response in your new variable
+// Fetch GeoJSON from URL and store response
 
+//Create an empty variable
+let geojson;
+
+// Fetch GeoJSON from URL and store response
+fetch('https://raw.githubusercontent.com/staceylry/GGR472/main/ggr472-lab4-main/data/pedcyc_collision_06-21.geojson')
+    .then(response => response.json())
+    .then(response => {
+        console.log(response); //Check response in console
+        geojson = response; // Store geojson as variable using URL from fetch response
+});
+
+// addSource and addLayer
+map.on('load', () => {
+    // Add datasource using GeoJSON variable
+    map.addSource('inputgeojson', {
+        type: 'geojson',
+        data: geojson
+    });
+
+    // Set style for when new points are added to the data source
+    map.addLayer({
+        'id': 'input-pnts',
+        'type': 'circle',
+        'source': 'inputgeojson',
+        'visiblity': 'none',
+        'paint': {
+            'circle-radius': 5,
+            'circle-color': 'grey'
+        }
+    });
+
+    let bboxgeojson;
+    let bbox = turf.envelope(geojson); // use turf to create an 'envelope' (bounding box) around points
+    let bboxscaled = turf.transformScale(bbox, 1.10); // Scale bbox up by 10%
+
+    // put the resulting envelope in a geojson format FeatureCollection
+    bboxgeojson = {
+        "type": "FeatureCollection",
+        "features": [bboxscaled]
+    };
+
+    // CREATE A HEX GRID
+    // must be in order: minX, minY, maxX, maxY. Select from scaled envelope created previously
+    let bboxcoords = [
+        bboxscaled.geometry.coordinates[0][0][0],
+        bboxscaled.geometry.coordinates[0][0][1],
+        bboxscaled.geometry.coordinates[0][2][0],
+        bboxscaled.geometry.coordinates[0][2][1]
+    ];
+
+    // CREATE A HEX GRID
+    let hexgrid = turf.hexGrid(bboxcoords, 0.5, { units: 'kilometers' });
+
+    // COLLISION
+    let collishex = turf.collect(hexgrid, geojson, '_id', 'values');
+
+    let maxcollis = 0;
+
+    // for loop go over each feature in collishex 
+    collishex.features.forEach((feature) => {
+        feature.properties.COUNT = feature.properties.values.length; // add counts to feature's property table
+        // look for the maximum collsions in map
+        if (feature.properties.COUNT > maxcollis) {
+            // console.log(feature);
+            maxcollis = feature.properties.COUNT;
+        }
+    });
+
+    // console.log(maxcollis); // got 78 as result
+
+    // add hexgrid to map
+    map.addSource('hex', {
+        type: 'geojson',
+        data: hexgrid
+    });
+
+    // view hexgrid to map
+    map.addLayer({
+        'id': 'hexgrid',
+        'type': 'fill',
+        'source': 'hex',
+        'paint': {
+            'fill-color': [
+                'step',
+                ['get', 'COUNT'],
+                'lightgreen',
+                10, 'red',
+                25, 'purple'
+            ],
+            'fill-opacity': 0.5,
+            'fill-outline-color': 'white'
+        }
+    });
+});
+
+document.getElementById('togglePointsBtn').addEventListener('click', toggleInputPoints);
+
+//helper function to toggle the visibility of points
+function toggleInputPoints() {
+    var visibility = map.getLayoutProperty('input-pnts', 'visibility');
+    
+    if (typeof visibility === 'none') {
+        map.setLayoutProperty('input-pnts', 'visibility', 'visible');
+    } else {
+        map.setLayoutProperty('input-pnts', 'visibility', 'none');
+    }
+}
 
 
 /*--------------------------------------------------------------------
@@ -54,5 +163,3 @@ Step 4: AGGREGATE COLLISIONS BY HEXGRID
 //        - The COUNT attribute
 //        - The maximum number of collisions found in a hexagon
 //      Add a legend and additional functionality including pop-up windows
-
-
